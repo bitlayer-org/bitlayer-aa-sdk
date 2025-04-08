@@ -44,7 +44,7 @@ const AddressLink = ({ chain, address = '' }: { chain: Chain; address?: string }
 
 export function AccountCard() {
   const { chain } = useAccount();
-  const { client, eoa } = useSmartAccount();
+  const { client, walletClient } = useSmartAccount();
 
   const account = client?.account;
 
@@ -79,15 +79,15 @@ export function AccountCard() {
               <AddressLink chain={chain} address={account.address} />
             </Field>
             <Field label="Owner">
-              <AddressLink chain={chain} address={eoa?.account?.address} />
+              <AddressLink chain={chain} address={walletClient?.account?.address} />
             </Field>
             <Field label="EOA Address">
-              <AddressLink chain={chain} address={eoa?.account?.address} />
+              <AddressLink chain={chain} address={walletClient?.account?.address} />
             </Field>
             <Field label="Entry Point Address" description="Version 0.6">
               <AddressLink chain={chain} address={account.getEntryPoint().address} />
             </Field>
-            <Field label="Factory Address" description="LightAccount Version v1.1.0">
+            <Field label="Factory Address" description={account.source}>
               <AddressLink chain={chain} address={factoryAddress} />
             </Field>
           </FieldList>

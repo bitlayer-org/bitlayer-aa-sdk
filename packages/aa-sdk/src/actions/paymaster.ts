@@ -1,13 +1,13 @@
-import { Address, Chain, Client, Hash, Prettify, RpcSchema, Transport } from 'viem';
-import {
+import type { Address, Chain, Client, Hash, Prettify, RpcSchema, Transport } from 'viem';
+import type {
   UserOperationRequest,
   EntryPointVersion,
   SmartContractAccount,
   GetEntryPointFromAccount,
-  AccountNotFoundError,
   UserOperationStruct,
   SmartAccountClient,
 } from '@aa-sdk/core';
+import { AccountNotFoundError } from '@aa-sdk/core';
 
 export type PaymasterNativeToken = {
   gas: Hash;

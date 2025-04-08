@@ -1,20 +1,14 @@
 import {
-  SmartAccountClient as SmartAccountClientCore,
-  SmartAccountClientActions,
-  SmartAccountSigner,
-  SmartContractAccount,
-  WalletClientSigner,
+  type SmartAccountClient as SmartAccountClientCore,
+  type SmartAccountClientActions,
+  type SmartContractAccount,
+  createSmartAccountClient as createSmartAccountClientCore,
+  type SmartAccountSigner,
 } from '@aa-sdk/core';
-import {
-  createLightAccountClient,
-  LightAccount,
-  LightAccountClientActions,
-  LightAccountVersion,
-} from '@account-kit/smart-contracts';
-import { Address, Chain, Transport, WalletClient } from 'viem';
-import { createPaymasterActions, PaymasterActions } from './paymaster';
-import { bitlayer } from './transport';
-import { gasEstimator } from './gas-estimator';
+import type { Address, Chain, Transport } from 'viem';
+import { createLightAccount, type LightAccountVersion } from './accounts/light-account.js';
+import { createPaymasterActions, type PaymasterActions } from './actions/paymaster.js';
+import { gasEstimator } from './middlewares/gas-estimator.js';
 
 export interface SmartAccountConfig {
   bundlerUrl: string;
@@ -22,74 +16,74 @@ export interface SmartAccountConfig {
   paymasterAddress: Address;
   apiKey: string;
   factoryAddress: Address;
-  factoryVersion?: LightAccountVersion<'LightAccount'>;
+  factoryVersion?: string;
 }
 
 export type CreateSmartAccountClientParams<
   TTransport extends Transport = Transport,
   TChain extends Chain | undefined = Chain,
+  TAccount extends SmartContractAccount | undefined = SmartContractAccount | undefined,
+  TSigner extends SmartAccountSigner = SmartAccountSigner,
 > = {
   chain: TChain;
-  eoa: WalletClient<TTransport, TChain>;
+  transport: TTransport;
+  signer: TSigner;
   config: SmartAccountConfig;
+  account?: TAccount;
 };
 
 export type SmartAccountClient<
   TTransport extends Transport = Transport,
   TChain extends Chain | undefined = Chain | undefined,
-  TSigner extends SmartAccountSigner = SmartAccountSigner,
+  TAccount extends SmartContractAccount | undefined = SmartContractAccount | undefined,
 > = SmartAccountClientCore<
   TTransport,
   TChain,
-  LightAccount<TSigner>,
-  SmartAccountClientActions<Chain, SmartContractAccount> &
-    LightAccountClientActions<TSigner, LightAccount<TSigner>> &
-    PaymasterActions
+  TAccount,
+  SmartAccountClientActions<Chain, SmartContractAccount> & PaymasterActions
 >;
 
 export function createSmartAccountClient<
   TTransport extends Transport = Transport,
   TChain extends Chain | undefined = Chain | undefined,
+  TAccount extends SmartContractAccount | undefined = SmartContractAccount | undefined,
   TSigner extends SmartAccountSigner = SmartAccountSigner,
 >(
-  args: CreateSmartAccountClientParams<TTransport, TChain>,
-): Promise<SmartAccountClient<TTransport, TChain, TSigner>>;
+  args: CreateSmartAccountClientParams<TTransport, TChain, TAccount, TSigner>,
+): Promise<SmartAccountClient<TTransport, TChain, TAccount>>;
 
 export async function createSmartAccountClient({
   chain,
-  eoa,
   config,
+  signer,
+  transport,
+  account,
 }: CreateSmartAccountClientParams) {
-  const {
-    bundlerUrl,
-    paymasterUrl,
-    apiKey,
-    paymasterAddress,
-    factoryAddress,
-    factoryVersion = 'v1.1.0',
-  } = config;
+  const { apiKey, paymasterAddress, factoryAddress, factoryVersion = 'v1.1.0' } = config;
 
   if (!chain) {
     throw new Error('Missing required parameter: chain');
   }
 
-  const signer = new WalletClientSigner(eoa, 'json-rpc');
+  if (!account) {
+    account = await createLightAccount({
+      chain,
+      transport,
+      signer,
+      factoryAddress,
+      version: factoryVersion as LightAccountVersion<'LightAccount'>,
+    });
+  }
 
-  const lightAccountClient = await createLightAccountClient({
+  return createSmartAccountClientCore({
+    account,
     chain,
-    transport: bitlayer({ bundler: bundlerUrl, paymaster: paymasterUrl }),
-    signer,
-    factoryAddress,
-    version: factoryVersion,
+    transport,
     gasEstimator: gasEstimator(),
-  });
-
-  const client = lightAccountClient.extend(
+  }).extend(
     createPaymasterActions({
       apiKey: apiKey,
       address: paymasterAddress,
     }),
   );
-
-  return client;
 }

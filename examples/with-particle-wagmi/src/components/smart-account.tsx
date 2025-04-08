@@ -1,23 +1,25 @@
 import { ReactNode } from 'react';
-import { SmartAccountProvider as Provider, useSmartAccount } from '@bitlayer/aa-sdk';
+import { SmartAccountConfigProvider, useSmartAccountClient } from '@bitlayer/aa-react';
 import { useAccount, useWalletClient } from 'wagmi';
 import { SmartAccountContext } from '@/hooks/smart-account';
 
 function InnerProvider({ children }: { children?: ReactNode }) {
   const { chain } = useAccount();
   const { data: walletClient } = useWalletClient();
-  const { client, eoa } = useSmartAccount({
+  const { client } = useSmartAccountClient({
     chain,
     walletClient,
   });
   return (
-    <SmartAccountContext.Provider value={{ client, eoa }}>{children}</SmartAccountContext.Provider>
+    <SmartAccountContext.Provider value={{ client, walletClient }}>
+      {children}
+    </SmartAccountContext.Provider>
   );
 }
 
 export function SmartAccountProvider({ children }: { children?: ReactNode }) {
   return (
-    <Provider
+    <SmartAccountConfigProvider
       config={{
         bundlerUrl: import.meta.env.VITE_4337_BUNDLER_URL,
         paymasterUrl: import.meta.env.VITE_4337_PAYMASTER_URL,
@@ -25,9 +27,10 @@ export function SmartAccountProvider({ children }: { children?: ReactNode }) {
         apiKey: import.meta.env.VITE_4337_PROJECT_APIKEY,
         factoryAddress: import.meta.env.VITE_4337_FACTORY_ADDRESS,
         factoryVersion: import.meta.env.VITE_4337_FACTORY_VERSION,
+        accountType: import.meta.env.VITE_4337_ACCOUNT_TYPE,
       }}
     >
       <InnerProvider>{children}</InnerProvider>
-    </Provider>
+    </SmartAccountConfigProvider>
   );
 }

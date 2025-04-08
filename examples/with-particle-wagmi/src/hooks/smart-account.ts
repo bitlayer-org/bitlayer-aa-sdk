@@ -4,7 +4,7 @@ import { WalletClient } from 'viem';
 
 interface ContextData {
   client?: SmartAccountClient;
-  eoa?: WalletClient;
+  walletClient?: WalletClient;
 }
 
 export const SmartAccountContext = createContext({} as ContextData);

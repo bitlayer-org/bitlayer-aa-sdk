@@ -1,7 +1,7 @@
 import React from 'react';
 import { ConnectKitProvider, createConfig } from '@particle-network/connectkit';
 import { authWalletConnectors } from '@particle-network/connectkit/auth';
-import { btr, btrTestnet } from '@particle-network/connectkit/chains';
+import { btrTestnet } from '@particle-network/connectkit/chains';
 import { wallet, EntryPosition } from '@particle-network/connectkit/wallet';
 import { evmWalletConnectors } from '@particle-network/connectkit/evm';
 

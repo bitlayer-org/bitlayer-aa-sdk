@@ -4,7 +4,7 @@ import { abi } from '@/abi/nft';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Field, FieldList } from '@/components/ui/field';
 import { Button } from '@/components/ui/button';
-import { useSponsorUserOperation } from '@/hooks/sponsor-user-op';
+import { useSponsorUserOperation } from '@bitlayer/aa-react';
 import { buildExplorerTransactionUrl, cn } from '@/lib/utils';
 import { Checkbox } from './ui/checkbox';
 import { useState } from 'react';
@@ -28,7 +28,7 @@ export function NFTCard() {
   const [isUsingErc20, setIsUsingErc20] = useState(false);
   const [isInBatch, setIsInBatch] = useState(false);
 
-  const { send, isPending } = useSponsorUserOperation({ client });
+  const { sendAsync, isPending } = useSponsorUserOperation({ client });
 
   const [amount, setAmount] = useState('20');
   const [sponsorType, setSponsorType] = useState<PaymasterSponsorType>(
@@ -36,7 +36,7 @@ export function NFTCard() {
   );
 
   const handleMint = async () => {
-    if (!client) {
+    if (!client || !client.account) {
       return;
     }
 
@@ -58,41 +58,47 @@ export function NFTCard() {
       let hash: Hash;
 
       if (isInBatch) {
-        hash = await send({
-          txs: {
-            account,
-            requests: [
-              {
-                to: sponsorTokenAddress,
-                data: encodeFunctionData({
-                  abi: erc20Abi,
-                  functionName: 'approve',
-                  args: [client.paymasterAddress, allowance],
-                }),
-              },
-              {
-                to: nftContractAddress,
-                data: encodeFunctionData({
-                  abi: abi,
-                  functionName: 'mint',
-                  args: [account.address],
-                }),
-              },
-            ],
+        hash = await sendAsync({
+          transaction: {
+            type: 'batch',
+            data: {
+              account,
+              requests: [
+                {
+                  to: sponsorTokenAddress,
+                  data: encodeFunctionData({
+                    abi: erc20Abi,
+                    functionName: 'approve',
+                    args: [client.paymasterAddress, allowance],
+                  }),
+                },
+                {
+                  to: nftContractAddress,
+                  data: encodeFunctionData({
+                    abi: abi,
+                    functionName: 'mint',
+                    args: [account.address],
+                  }),
+                },
+              ],
+            },
           },
           sponsorContext,
         });
       } else {
-        hash = await send({
-          tx: {
-            account,
-            chain,
-            to: nftContractAddress,
-            data: encodeFunctionData({
-              abi: abi,
-              functionName: 'mint',
-              args: [account.address],
-            }),
+        hash = await sendAsync({
+          transaction: {
+            type: 'single',
+            data: {
+              account,
+              chain,
+              to: nftContractAddress,
+              data: encodeFunctionData({
+                abi: abi,
+                functionName: 'mint',
+                args: [account.address],
+              }),
+            },
           },
           sponsorContext,
         });
@@ -115,7 +121,7 @@ export function NFTCard() {
   };
 
   const handleApprove = async () => {
-    if (!client) {
+    if (!client || !client.account) {
       return;
     }
 
@@ -124,16 +130,19 @@ export function NFTCard() {
 
     try {
       const allowance = parseUnits(amount, 18);
-      const hash = await send({
-        tx: {
-          chain: client.chain,
-          account: account,
-          to: sponsorTokenAddress,
-          data: encodeFunctionData({
-            abi: erc20Abi,
-            functionName: 'approve',
-            args: [client.paymasterAddress, allowance],
-          }),
+      const hash = await sendAsync({
+        transaction: {
+          type: 'single',
+          data: {
+            chain: client.chain,
+            account: account,
+            to: sponsorTokenAddress,
+            data: encodeFunctionData({
+              abi: erc20Abi,
+              functionName: 'approve',
+              args: [client.paymasterAddress, allowance],
+            }),
+          },
         },
         sponsorContext: {
           type: PaymasterSponsorTypeNative,

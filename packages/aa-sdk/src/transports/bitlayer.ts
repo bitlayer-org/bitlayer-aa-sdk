@@ -1,12 +1,12 @@
 import { http } from 'viem';
 import { split } from '@aa-sdk/core';
 
-export interface BitlayerTransport {
+export interface BitlayerTransportOptions {
   bundler?: string;
   paymaster?: string;
 }
 
-export function bitlayer({ bundler, paymaster }: BitlayerTransport) {
+export function bitlayer({ bundler, paymaster }: BitlayerTransportOptions) {
   return split({
     overrides: [
       {

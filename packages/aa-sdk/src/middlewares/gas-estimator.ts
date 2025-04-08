@@ -3,7 +3,7 @@ import {
   resolveProperties,
   deepHexlify,
   applyUserOpOverrideOrFeeOption,
-  ClientMiddlewareFn,
+  type ClientMiddlewareFn,
 } from '@aa-sdk/core';
 
 export const gasEstimator =
