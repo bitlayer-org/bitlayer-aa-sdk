@@ -1,4 +1,5 @@
 export type {
+  AccountType,
   CreateSmartAccountClientParams,
   SmartAccountClient,
   SmartAccountConfig,

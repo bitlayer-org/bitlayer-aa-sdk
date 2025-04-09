@@ -9,6 +9,10 @@ import type { Address, Chain, Transport } from 'viem';
 import { createLightAccount, type LightAccountVersion } from './accounts/light-account.js';
 import { createPaymasterActions, type PaymasterActions } from './actions/paymaster.js';
 import { gasEstimator } from './middlewares/gas-estimator.js';
+import { createSimpleAccount } from './accounts/simple-account.js';
+import { bitlayer } from './transports/bitlayer.js';
+
+export type AccountType = 'simpleAccount' | 'lightAccount';
 
 export interface SmartAccountConfig {
   bundlerUrl: string;
@@ -17,10 +21,12 @@ export interface SmartAccountConfig {
   apiKey: string;
   factoryAddress: Address;
   factoryVersion?: string;
+  accountType?: AccountType;
+  accountAddress?: Address;
 }
 
 export type CreateSmartAccountClientParams<
-  TTransport extends Transport = Transport,
+  TTransport extends Transport | undefined = Transport | undefined,
   TChain extends Chain | undefined = Chain,
   TAccount extends SmartContractAccount | undefined = SmartContractAccount | undefined,
   TSigner extends SmartAccountSigner = SmartAccountSigner,
@@ -28,7 +34,6 @@ export type CreateSmartAccountClientParams<
   chain: TChain;
   transport: TTransport;
   signer: TSigner;
-  config: SmartAccountConfig;
   account?: TAccount;
 };
 
@@ -44,46 +49,75 @@ export type SmartAccountClient<
 >;
 
 export function createSmartAccountClient<
-  TTransport extends Transport = Transport,
+  TTransport extends Transport | undefined = Transport | undefined,
   TChain extends Chain | undefined = Chain | undefined,
   TAccount extends SmartContractAccount | undefined = SmartContractAccount | undefined,
   TSigner extends SmartAccountSigner = SmartAccountSigner,
 >(
-  args: CreateSmartAccountClientParams<TTransport, TChain, TAccount, TSigner>,
-): Promise<SmartAccountClient<TTransport, TChain, TAccount>>;
+  config: CreateSmartAccountClientParams<TTransport, TChain, TAccount, TSigner> &
+    SmartAccountConfig,
+): Promise<SmartAccountClient<NonNullable<TTransport>, TChain, TAccount>>;
 
 export async function createSmartAccountClient({
-  chain,
-  config,
-  signer,
   transport,
   account,
-}: CreateSmartAccountClientParams) {
-  const { apiKey, paymasterAddress, factoryAddress, factoryVersion = 'v1.1.0' } = config;
+  ...config
+}: CreateSmartAccountClientParams & SmartAccountConfig) {
+  const {
+    chain,
+    signer,
+
+    apiKey,
+    paymasterAddress,
+    factoryAddress,
+    factoryVersion = 'v1.1.0',
+    accountType = 'lightAccount',
+    accountAddress,
+  } = config;
 
   if (!chain) {
     throw new Error('Missing required parameter: chain');
   }
 
-  if (!account) {
-    account = await createLightAccount({
-      chain,
-      transport,
-      signer,
-      factoryAddress,
-      version: factoryVersion as LightAccountVersion<'LightAccount'>,
+  if (!transport) {
+    transport = bitlayer({
+      paymaster: config.paymasterUrl,
+      bundler: config.bundlerUrl,
     });
   }
+
+  if (!account) {
+    switch (accountType) {
+      case 'simpleAccount':
+        account = await createSimpleAccount({
+          chain,
+          transport,
+          signer,
+          factoryAddress,
+          accountAddress,
+        });
+        break;
+      default:
+        account = await createLightAccount({
+          chain,
+          transport,
+          signer,
+          factoryAddress,
+          version: factoryVersion as LightAccountVersion<'LightAccount'>,
+          accountAddress,
+        });
+    }
+  }
+
+  const paymasterActions = createPaymasterActions({
+    apiKey: apiKey,
+    address: paymasterAddress,
+  });
 
   return createSmartAccountClientCore({
     account,
     chain,
     transport,
     gasEstimator: gasEstimator(),
-  }).extend(
-    createPaymasterActions({
-      apiKey: apiKey,
-      address: paymasterAddress,
-    }),
-  );
+  }).extend(paymasterActions);
 }

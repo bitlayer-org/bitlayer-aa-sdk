@@ -1,39 +1,33 @@
-# Bitlayer Account Abstraction SDK
+# Bitlayer Account Abstraction SDK for React
 
 A [viem](https://viem.sh)-based SDK that enables seamless interactions with
 ERC-4337 Smart Accounts on Bitlayer.
 
 ## Overview
 
-This package provides core functionality for interacting with Account Abstraction
-(ERC-4337) on Bitlayer. It allows developers to easily integrate Smart Account
-capabilities into their applications with gas sponsorship support.
+This package contains hooks for integrating with Account Abstraction (ERC-4337)
+on Bitlayer. It allows developers to easily integrate Smart Account capabilities
+into their applications with gas sponsorship support.
 
 ## Installation
 
 ```bash
-npm install @bitlayer/aa-sdk
+npm install @bitlayer/aa-sdk @bitlayer/aa-react
 # or
-yarn add @bitlayer/aa-sdk
+yarn add @bitlayer/aa-sdk @bitlayer/aa-react
 # or
-pnpm add @bitlayer/aa-sdk
+pnpm add @bitlayer/aa-sdk @bitlayer/aa-react
 ```
 
 ## Usage
 
 ### Configuration Setup
 
-First, prepare the configuration and a signer for the SDK:
+First, prepare the configuration and a wallet client:
 
 ```typescript
 import { createWalletClient, custom, encodeFunctionData, EIP1193Provider } from 'viem';
 import { btr } from 'viem/chains';
-import {
-  createSmartAccountClient,
-  sendUserOperationWithSponsorContext,
-  PaymasterSponsorTypeNative,
-  WalletClientSigner,
-} from '@bitlayer/aa-sdk';
 
 // SDK configuration
 const config = {
@@ -54,52 +48,43 @@ const walletClient = createWalletClient({
   chain,
   transport: custom(provider),
 });
-
-const signer = new WalletClientSigner(walletClient as WalletClient, 'json-rpc');
 ```
-
-> **Note**: If you're using `wagmi`, you can simply use the `useWalletClient`
-> hook or the `getWalletClient` function to obtain the wallet client.
 
 ### Initializing the Smart Account Client
 
+In your component, you can use the `useSmartAccountClient` hook to create a
+Smart Account client:
+
 ```typescript
-const client = await createSmartAccountClient({
-  chain: btr,
-  signer,
-  ...config,
+import { useSmartAccountClient } from '@bitlayer/aa-react';
+
+const config = {
+  bundlerUrl: 'https://...', // Bundler endpoint
+  paymasterUrl: 'https://...', // Paymaster endpoint
+  paymasterAddress: '0x', // Paymaster contract address
+  apiKey: '...', // API key for authentication
+  factoryAddress: '0x', // Smart Account factory address
+  accountType: 'lightAccount', // Account type, lightAccount by default
+} satisfies SmartAccountConfig;
+
+const { client } = useSmartAccountClient(config, {
+  chain,
+  walletClient,
 });
 ```
 
-This client instance serves as your gateway to interact with ERC-4337 compliant
-Smart Accounts on Bitlayer. The SDK supports two battle-tested account implementations:
-
-- **Light Account** (`lightAccount`): A gas-efficient smart contract account
-  developed by Alchemy, optimized for most dApp use cases.
-- **Simple Account** (`simpleAccount`): The reference implementation from the
-  Ethereum Foundation, offering standard ERC-4337 functionality.
-
-By default, the SDK uses `lightAccount`. To switch to Simple Account, set the
-`accountType` to `simpleAccount` in the configuration object:
-
-```typescript
-{
-  // ...other properties
-  factoryAddress: '0x...', // Simple Account factory address
-  accountType: 'simpleAccount'
-}
-```
-
-The initialized client provides methods to deploy your Smart Account,
-estimate gas costs, and send user operations through the ERC-4337 bundler network.
+> It is recommended to use a React Context to store the smart account client
+> so that it can be accessed throughout your application. You can find sample
+> Context Provider and hooks in the `examples` directory.
 
 ### Sending User Operations
 
-After initializing the client, you can use it to send user operations
-with gas sponsorship:
-
 ```typescript
-const hash = await sendUserOperationWithSponsorContext(client, {
+import { useSmartAccountClient } from '@bitlayer/aa-react';
+
+const { sendAsync, isPending } = useSponsorUserOperation({ client });
+
+const hash = await sendAsync({
   transaction: {
     type: 'single',
     data: {
@@ -123,7 +108,7 @@ const hash = await sendUserOperationWithSponsorContext(client, {
 ## Examples
 
 For a more comprehensive understanding of how to use the SDK,
-There are some complete examples in the `examples` directory:
+There are some examples in the `examples` directory:
 
 1. Using the SDK with [wagmi](https://wagmi.sh/) [🔗](../../examples/with-wagmi)
 2. Using the SDK with [Privy](https://www.privy.io/) [🔗](../../examples/with-privy)

@@ -42,6 +42,7 @@ export type { UserOperationContext } from '@aa-sdk/core';
 
 // clients
 export type {
+  AccountType,
   CreateSmartAccountClientParams,
   SmartAccountClient,
   SmartAccountConfig,

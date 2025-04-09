@@ -1,16 +1,15 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { Chain, CustomTransport, Transport, WalletClient } from 'viem';
 import {
   bitlayer,
-  createSimpleAccount,
   createSmartAccountClient,
   WalletClientSigner,
   type SmartAccountClient,
+  type SmartAccountConfig,
   type SmartContractAccount,
 } from '@bitlayer/aa-sdk';
-import { SmartAccountConfigContext } from '../context.js';
 
-export interface UseSmartAccountParams<
+export interface UseSmartAccountOptions<
   TTransport extends Transport = Transport,
   TChain extends Chain | undefined = Chain | undefined,
 > {
@@ -33,10 +32,10 @@ export function useSmartAccountClient<
   TTransport extends Transport = Transport,
   TChain extends Chain | undefined = Chain | undefined,
 >(
-  params: UseSmartAccountParams<TTransport, TChain> = {},
+  config: SmartAccountConfig,
+  options: UseSmartAccountOptions<TTransport, TChain> = {},
 ): UseSmartAccountReturnValue<TTransport, TChain> {
-  const { config } = useContext(SmartAccountConfigContext);
-  const { chain, walletClient } = params;
+  const { chain, walletClient } = options;
 
   const [smartAccountClient, setSmartAccountClient] = useState<
     SmartAccountClient<TTransport, TChain> | undefined
@@ -45,7 +44,11 @@ export function useSmartAccountClient<
   const [isLoading, setIsLoading] = useState(true);
 
   const initSmartAccount = useCallback(
-    async (walletClient: WalletClient<TTransport, TChain>, chain: TChain) => {
+    async (
+      config: SmartAccountConfig,
+      walletClient: WalletClient<TTransport, TChain>,
+      chain: TChain,
+    ) => {
       if (!chain) {
         return;
       }
@@ -55,37 +58,26 @@ export function useSmartAccountClient<
       const signer = new WalletClientSigner(walletClient as WalletClient, 'json-rpc');
       const transport = bitlayer({ bundler: config.bundlerUrl, paymaster: config.paymasterUrl });
 
-      let account: SmartContractAccount | undefined;
-      if (config.accountType === 'simpleAccount') {
-        account = await createSimpleAccount({
-          chain,
-          transport,
-          signer,
-          factoryAddress: config.factoryAddress,
-        });
-      }
-
       const client = await createSmartAccountClient<CustomTransport, TChain>({
         signer,
         chain,
-        config,
         transport,
-        account,
+        ...config,
       });
 
       setSmartAccountClient(client);
       setSmartAccount(client.account);
       setIsLoading(false);
     },
-    [setSmartAccount, setSmartAccountClient, config],
+    [],
   );
 
   useEffect(() => {
     if (!walletClient || !chain) {
       return;
     }
-    initSmartAccount(walletClient, chain);
-  }, [walletClient, chain, initSmartAccount]);
+    initSmartAccount(config, walletClient, chain);
+  }, [walletClient, chain]);
 
   return {
     client: smartAccountClient,
