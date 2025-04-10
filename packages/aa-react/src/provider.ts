@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createElement } from 'react';
 import type { WalletClient } from 'viem';
 import type { SmartAccountClient } from '@bitlayer/aa-sdk';
 import { SmartAccountConfigContext, SmartAccountContext } from './context.js';
@@ -11,10 +11,12 @@ export function SmartAccountConfigProvider({
   config: SmartAccountConfig;
   children?: React.ReactNode;
 }) {
-  return (
-    <SmartAccountConfigContext.Provider value={{ config }}>
-      {children}
-    </SmartAccountConfigContext.Provider>
+  return createElement(
+    SmartAccountConfigContext.Provider,
+    {
+      value: { config },
+    },
+    children,
   );
 }
 
@@ -28,14 +30,11 @@ export type SmartAccountProviderProps = {
 
 export function SmartAccountProvider({ config, children }: SmartAccountProviderProps) {
   const { client, walletClient } = config;
-  return (
-    <SmartAccountContext.Provider
-      value={{
-        client,
-        walletClient,
-      }}
-    >
-      {children}
-    </SmartAccountContext.Provider>
+  return createElement(
+    SmartAccountContext.Provider,
+    {
+      value: { client, walletClient },
+    },
+    children,
   );
 }
