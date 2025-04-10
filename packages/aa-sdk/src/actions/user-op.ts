@@ -69,7 +69,7 @@ export async function sendUserOperationWithSponsorContext<
   }
 
   const supportedTokens = await client.getSupportedTokens(userOp);
-  if (supportedTokens.freeGas || supportedTokens.tokens.length > 0) {
+  if (supportedTokens.freeGas) {
     let shouldSponsor = true;
 
     if (shouldAttemptSponsorship) {

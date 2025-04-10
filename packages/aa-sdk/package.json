@@ -3,6 +3,13 @@
   "version": "0.1.0",
   "description": "viem based SDK that enables interactions with ERC-4337 Smart Accounts on Bitlayer.",
   "author": "Bitlayer",
+  "license": "MIT",
+  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bitlayer-org/bitlayer-aa-sdk.git",
+    "directory": "packages/aa-sdk"
+  },
   "type": "module",
   "scripts": {
     "build": "pnpm run clean && pnpm run build:esm+types",
@@ -10,8 +17,20 @@
     "check:types": "tsc --noEmit",
     "clean": "rm -rf dist tsconfig.tsbuildinfo"
   },
-  "keywords": [],
-  "license": "MIT",
+  "files": [
+    "dist/**",
+    "!dist/**/*.tsbuildinfo",
+    "src/**/*.ts",
+    "!src/**/*.test.ts",
+    "!src/**/*.test-d.ts",
+    "/actions",
+    "/accounts",
+    "/clients",
+    "/transports"
+  ],
+  "main": "./dist/esm/exports/index.js",
+  "types": "./dist/types/exports/index.d.ts",
+  "typings": "./dist/types/exports/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/types/exports/index.d.ts",
@@ -32,12 +51,12 @@
     "./transports": {
       "types": "./dist/types/exports/transports.d.ts",
       "default": "./dist/esm/exports/transports.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "dependencies": {
     "@aa-sdk/core": "^4.1.1",
-    "@account-kit/smart-contracts": "^4.1.1",
-    "viem": "^2.21.28"
+    "@account-kit/smart-contracts": "^4.1.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.11.1",
@@ -48,5 +67,9 @@
     "globals": "^15.9.0",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.7.0"
+  },
+  "peerDependencies": {
+    "typescript": ">=5.0.4",
+    "viem": "2.x"
   }
 }

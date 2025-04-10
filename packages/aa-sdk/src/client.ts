@@ -44,7 +44,7 @@ export type SmartAccountClient<
 > = SmartAccountClientCore<
   TTransport,
   TChain,
-  TAccount,
+  NonNullable<TAccount>,
   SmartAccountClientActions<Chain, SmartContractAccount> & PaymasterActions
 >;
 

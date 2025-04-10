@@ -12,11 +12,11 @@ capabilities into their applications with gas sponsorship support.
 ## Installation
 
 ```bash
-npm install @bitlayer/aa-sdk
+npm install @bitlayer/aa-sdk viem
 # or
-yarn add @bitlayer/aa-sdk
+yarn add @bitlayer/aa-sdk viem
 # or
-pnpm add @bitlayer/aa-sdk
+pnpm add @bitlayer/aa-sdk viem
 ```
 
 ## Usage
