@@ -1,6 +1,9 @@
 import { ReactNode, useMemo } from 'react';
-import { SmartAccountConfig, useSmartAccountClient } from '@bitlayer/aa-react';
-import { SmartAccountContext } from '@/hooks/smart-account';
+import {
+  SmartAccountConfig,
+  useSmartAccountClient,
+  SmartAccountProvider as SmartAccountProviderOrigin,
+} from '@bitlayer/aa-react';
 import { useAccount, useWallets } from '@particle-network/connectkit';
 
 export function SmartAccountProvider({ children }: { children?: ReactNode }) {
@@ -30,8 +33,13 @@ export function SmartAccountProvider({ children }: { children?: ReactNode }) {
   });
 
   return (
-    <SmartAccountContext.Provider value={{ client, walletClient }}>
+    <SmartAccountProviderOrigin
+      config={{
+        client,
+        walletClient,
+      }}
+    >
       {children}
-    </SmartAccountContext.Provider>
+    </SmartAccountProviderOrigin>
   );
 }

@@ -4,7 +4,7 @@ import { abi } from '@/abi/nft';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Field, FieldList } from '@/components/ui/field';
 import { Button } from '@/components/ui/button';
-import { useSponsorUserOperation } from '@bitlayer/aa-react';
+import { useSponsorUserOperation, useSmartAccount } from '@bitlayer/aa-react';
 import { buildExplorerTransactionUrl, cn } from '@/lib/utils';
 import { Checkbox } from './ui/checkbox';
 import { useState } from 'react';
@@ -17,7 +17,6 @@ import {
   PaymasterSponsorTypePostfund,
   PaymasterSponsorTypePrefund,
 } from '@bitlayer/aa-sdk';
-import { useSmartAccount } from '@/hooks/smart-account';
 
 const nftContractAddress = import.meta.env.VITE_NFT_CONTRACT_ADDRESS;
 const sponsorTokenAddress = import.meta.env.VITE_SPONSOR_TOKEN_ADDRESS;

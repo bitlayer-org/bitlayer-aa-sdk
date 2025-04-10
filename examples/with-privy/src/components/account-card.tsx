@@ -1,11 +1,10 @@
-import { useAccount } from 'wagmi';
 import { Chain } from 'viem';
 import { useQuery } from '@tanstack/react-query';
 import useCopy from '@react-hook/copy';
 import { CopyIcon } from '@radix-ui/react-icons';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Field, FieldList } from '@/components/ui/field';
-import { useSmartAccount } from '@/hooks/smart-account';
+import { useSmartAccount } from '@bitlayer/aa-react';
 import { buildExplorerAddressUrl, cn } from '@/lib/utils';
 
 const AddressLink = ({ chain, address = '' }: { chain: Chain; address?: string }) => {
@@ -43,10 +42,7 @@ const AddressLink = ({ chain, address = '' }: { chain: Chain; address?: string }
 };
 
 export function AccountCard() {
-  const { chain } = useAccount();
-  const { client, walletClient: eoa } = useSmartAccount();
-
-  const account = client?.account;
+  const { account, chain, eoaAccount } = useSmartAccount();
 
   const { data: isAccountDeployed } = useQuery({
     queryKey: ['smartAccount/isAccountDeployed', account?.address],
@@ -79,10 +75,10 @@ export function AccountCard() {
               <AddressLink chain={chain} address={account.address} />
             </Field>
             <Field label="Owner">
-              <AddressLink chain={chain} address={eoa?.account?.address} />
+              <AddressLink chain={chain} address={eoaAccount?.address} />
             </Field>
             <Field label="EOA Address">
-              <AddressLink chain={chain} address={eoa?.account?.address} />
+              <AddressLink chain={chain} address={eoaAccount?.address} />
             </Field>
             <Field label="Entry Point Address" description="Version 0.6">
               <AddressLink chain={chain} address={account.getEntryPoint().address} />

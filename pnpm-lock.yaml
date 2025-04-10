@@ -20,12 +20,6 @@ importers:
 
   examples/with-particle:
     dependencies:
-      '@aa-sdk/core':
-        specifier: ^4.1.1
-        version: 4.2.0(typescript@5.6.3)(viem@2.21.37(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.23.8))
-      '@account-kit/smart-contracts':
-        specifier: ^4.1.1
-        version: 4.2.0(bufferutil@4.0.8)(encoding@0.1.13)(typescript@5.6.3)(utf-8-validate@5.0.10)(viem@2.21.37(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.23.8))
       '@bitlayer/aa-react':
         specifier: workspace:*
         version: link:../../packages/aa-react
@@ -142,14 +136,8 @@ importers:
         specifier: ^0.22.0
         version: 0.22.0(rollup@4.24.3)(vite@5.4.10(@types/node@22.8.5)(terser@5.36.0))
 
-  examples/with-particle-wagmi:
+  examples/with-particle-auth:
     dependencies:
-      '@aa-sdk/core':
-        specifier: ^4.1.1
-        version: 4.2.0(typescript@5.6.3)(viem@2.21.37(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.23.8))
-      '@account-kit/smart-contracts':
-        specifier: ^4.1.1
-        version: 4.2.0(bufferutil@4.0.8)(encoding@0.1.13)(typescript@5.6.3)(utf-8-validate@5.0.10)(viem@2.21.37(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.23.8))
       '@bitlayer/aa-react':
         specifier: workspace:*
         version: link:../../packages/aa-react
@@ -274,12 +262,6 @@ importers:
 
   examples/with-privy:
     dependencies:
-      '@aa-sdk/core':
-        specifier: ^4.1.1
-        version: 4.2.0(typescript@5.6.3)(viem@2.21.37(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.23.8))
-      '@account-kit/smart-contracts':
-        specifier: ^4.1.1
-        version: 4.2.0(bufferutil@4.0.8)(encoding@0.1.13)(typescript@5.6.3)(utf-8-validate@5.0.10)(viem@2.21.37(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.23.8))
       '@bitlayer/aa-react':
         specifier: workspace:*
         version: link:../../packages/aa-react
@@ -404,12 +386,6 @@ importers:
 
   examples/with-wagmi:
     dependencies:
-      '@aa-sdk/core':
-        specifier: ^4.1.1
-        version: 4.2.0(typescript@5.6.3)(viem@2.21.37(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.23.8))
-      '@account-kit/smart-contracts':
-        specifier: ^4.1.1
-        version: 4.2.0(bufferutil@4.0.8)(encoding@0.1.13)(typescript@5.6.3)(utf-8-validate@5.0.10)(viem@2.21.37(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.23.8))
       '@bitlayer/aa-react':
         specifier: workspace:*
         version: link:../../packages/aa-react
@@ -534,22 +510,16 @@ importers:
       '@bitlayer/aa-sdk':
         specifier: workspace:*
         version: link:../aa-sdk
-      '@tanstack/react-query':
-        specifier: ^5.59.15
-        version: 5.59.16(react@18.3.1)
-      react:
-        specifier: ^18.3.1
-        version: 18.3.1
-      react-dom:
-        specifier: ^18.3.1
-        version: 18.3.1(react@18.3.1)
       viem:
-        specifier: ^2.21.28
+        specifier: 2.x
         version: 2.21.37(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.23.8)
     devDependencies:
       '@eslint/js':
         specifier: ^9.11.1
         version: 9.13.0
+      '@tanstack/react-query':
+        specifier: ^5.59.15
+        version: 5.59.16(react@18.3.1)
       '@types/node':
         specifier: ^22.7.6
         version: 22.8.5
@@ -571,6 +541,12 @@ importers:
       globals:
         specifier: ^15.9.0
         version: 15.11.0
+      react:
+        specifier: ^18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: ^18.3.1
+        version: 18.3.1(react@18.3.1)
       typescript:
         specifier: ^5.5.3
         version: 5.6.3
@@ -587,7 +563,7 @@ importers:
         specifier: ^4.1.1
         version: 4.2.0(bufferutil@4.0.8)(encoding@0.1.13)(typescript@5.6.3)(utf-8-validate@5.0.10)(viem@2.21.37(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.23.8))
       viem:
-        specifier: ^2.21.28
+        specifier: 2.x
         version: 2.21.37(bufferutil@4.0.8)(typescript@5.6.3)(utf-8-validate@5.0.10)(zod@3.23.8)
     devDependencies:
       '@eslint/js':

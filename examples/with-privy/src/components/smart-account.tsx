@@ -2,8 +2,11 @@ import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { Address, createWalletClient, custom, Chain, WalletClient } from 'viem';
 import { useWallets } from '@privy-io/react-auth';
-import { SmartAccountConfig, useSmartAccountClient } from '@bitlayer/aa-react';
-import { SmartAccountContext } from '@/hooks/smart-account';
+import {
+  SmartAccountConfig,
+  useSmartAccountClient,
+  SmartAccountProvider as SmartAccountProviderOrigin,
+} from '@bitlayer/aa-react';
 
 function usePrivyEmbeddedWalletClient(chain?: Chain) {
   const { wallets } = useWallets();
@@ -52,8 +55,8 @@ export function SmartAccountProvider({ children }: { children?: ReactNode }) {
   });
 
   return (
-    <SmartAccountContext.Provider value={{ client, walletClient }}>
+    <SmartAccountProviderOrigin config={{ client, walletClient }}>
       {children}
-    </SmartAccountContext.Provider>
+    </SmartAccountProviderOrigin>
   );
 }

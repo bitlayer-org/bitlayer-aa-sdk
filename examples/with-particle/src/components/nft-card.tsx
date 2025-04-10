@@ -4,7 +4,7 @@ import { abi } from '@/abi/nft';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Field, FieldList } from '@/components/ui/field';
 import { Button } from '@/components/ui/button';
-import { useSponsorUserOperation } from '@bitlayer/aa-react';
+import { useSmartAccount, useSponsorUserOperation } from '@bitlayer/aa-react';
 import { buildExplorerTransactionUrl, cn } from '@/lib/utils';
 import { Checkbox } from './ui/checkbox';
 import { useState } from 'react';
@@ -17,16 +17,20 @@ import {
   PaymasterSponsorTypePostfund,
   PaymasterSponsorTypePrefund,
 } from '@bitlayer/aa-sdk';
-import { useSmartAccount } from '@/hooks/smart-account';
+import { AddressLink } from './address-link';
+import { LoaderIcon } from './icons/loader';
 
 const nftContractAddress = import.meta.env.VITE_NFT_CONTRACT_ADDRESS;
 const sponsorTokenAddress = import.meta.env.VITE_SPONSOR_TOKEN_ADDRESS;
 
 export function NFTCard() {
-  const { client } = useSmartAccount();
+  const { chain, client } = useSmartAccount();
 
   const [isUsingErc20, setIsUsingErc20] = useState(false);
   const [isInBatch, setIsInBatch] = useState(false);
+
+  const [isApproving, setIsApproving] = useState(false);
+  const [isMinting, setIsMinting] = useState(false);
 
   const { sendAsync, isPending } = useSponsorUserOperation({ client });
 
@@ -36,7 +40,7 @@ export function NFTCard() {
   );
 
   const handleMint = async () => {
-    if (!client || !client.account) {
+    if (!client) {
       return;
     }
 
@@ -55,8 +59,9 @@ export function NFTCard() {
         };
 
     try {
-      let hash: Hash;
+      setIsMinting(true);
 
+      let hash: Hash;
       if (isInBatch) {
         hash = await sendAsync({
           transaction: {
@@ -117,11 +122,13 @@ export function NFTCard() {
       toast.error(
         'Error occurred while minting NFT. Please open the DevTools for more information.',
       );
+    } finally {
+      setIsMinting(false);
     }
   };
 
   const handleApprove = async () => {
-    if (!client || !client.account) {
+    if (!client) {
       return;
     }
 
@@ -129,13 +136,15 @@ export function NFTCard() {
     const account = client.account;
 
     try {
+      setIsApproving(true);
+
       const allowance = parseUnits(amount, 18);
       const hash = await sendAsync({
         transaction: {
           type: 'single',
           data: {
-            chain: client.chain,
-            account: account,
+            chain,
+            account,
             to: sponsorTokenAddress,
             data: encodeFunctionData({
               abi: erc20Abi,
@@ -163,6 +172,8 @@ export function NFTCard() {
       toast.error(
         'Error occurred while minting NFT. Please open the DevTools for more information.',
       );
+    } finally {
+      setIsApproving(false);
     }
   };
 
@@ -185,7 +196,7 @@ export function NFTCard() {
       <CardContent>
         <FieldList>
           <Field label="NFT Contract Address">
-            <span className="font-mono">{nftContractAddress}</span>
+            <AddressLink chain={chain} address={nftContractAddress} />
           </Field>
 
           <FieldPayWithERC20 isUsingErc20={isUsingErc20} setIsUsingErc20={setIsUsingErc20} />
@@ -196,7 +207,7 @@ export function NFTCard() {
             })}
           >
             <Field label="ERC20 Token Address">
-              <span className="font-mono">{sponsorTokenAddress}</span>
+              <AddressLink chain={chain} address={sponsorTokenAddress} />
             </Field>
             <Field
               label="ERC20 Token Amount"
@@ -205,6 +216,7 @@ export function NFTCard() {
               <div className="flex gap-2">
                 <Input placeholder="" type="number" value={amount} onChange={handleChangeAmount} />
                 <Button disabled={!client || isPending || isInBatch} onClick={handleApprove}>
+                  {isApproving && <LoaderIcon />}
                   Approve
                 </Button>
               </div>
@@ -233,6 +245,7 @@ export function NFTCard() {
 
           <div className="pt-3">
             <Button disabled={!client || isPending} onClick={handleMint}>
+              {isMinting && <LoaderIcon />}
               {isInBatch ? 'Approve and Mint' : 'Mint'}
             </Button>
           </div>

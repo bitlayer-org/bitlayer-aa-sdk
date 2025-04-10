@@ -10,8 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@aa-sdk/core": "^4.1.1",
-    "@account-kit/smart-contracts": "^4.1.1",
     "@bitlayer/aa-sdk": "workspace:*",
     "@bitlayer/aa-react": "workspace:*",
     "@particle-network/connectkit": "^2.0.9",
