@@ -5,18 +5,18 @@ ERC-4337 Smart Accounts on Bitlayer.
 
 ## Overview
 
-This package contains hooks for integrating with Account Abstraction (ERC-4337)
-on Bitlayer. It allows developers to easily integrate Smart Account capabilities
-into their applications with gas sponsorship support.
+This package contains components and hooks for integrating with Account Abstraction
+(ERC-4337) on Bitlayer. It allows developers to easily integrate Smart Account
+capabilities into their applications with gas sponsorship support.
 
 ## Installation
 
 ```bash
-npm install @bitlayer/aa-sdk @bitlayer/aa-react
+npm install @bitlayer/aa-sdk @bitlayer/aa-react @tanstack/react-query viem
 # or
-yarn add @bitlayer/aa-sdk @bitlayer/aa-react
+yarn add @bitlayer/aa-sdk @bitlayer/aa-react @tanstack/react-query viem
 # or
-pnpm add @bitlayer/aa-sdk @bitlayer/aa-react
+pnpm add @bitlayer/aa-sdk @bitlayer/aa-react @tanstack/react-query viem
 ```
 
 ## Usage
@@ -73,15 +73,28 @@ const { client } = useSmartAccountClient(config, {
 });
 ```
 
-> It is recommended to use a React Context to store the smart account client
-> so that it can be accessed throughout your application. You can find sample
-> Context Provider and hooks in the `examples` directory.
+Add the `SmartAccountProvider` to your app:
+
+```typescript
+import { SmartAccountProvider } from '@bitlayer/aa-react';
+
+function Root() {
+  // ...
+
+  return (
+    <SmartAccountProvider client={client} walletClient={walletClient}>
+      {children}
+    </SmartAccountProvider>
+  );
+}
+```
 
 ### Sending User Operations
 
 ```typescript
-import { useSmartAccountClient } from '@bitlayer/aa-react';
+import { useSmartAccount, useSponsorUserOperation } from '@bitlayer/aa-react';
 
+const { client } = useSmartAccount();
 const { sendAsync, isPending } = useSponsorUserOperation({ client });
 
 const hash = await sendAsync({
