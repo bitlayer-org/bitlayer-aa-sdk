@@ -1,5 +1,8 @@
 // accounts
-export type { CreateSimpleAccountParams } from '../accounts/simple-account.js';
+export type {
+  CreateSimpleAccountParams,
+  SimpleAccountVersion,
+} from '../accounts/simple-account.js';
 export { createSimpleAccount } from '../accounts/simple-account.js';
 
 export type { CreateLightAccountParams, LightAccountVersion } from '../accounts/light-account.js';

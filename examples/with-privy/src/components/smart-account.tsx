@@ -45,7 +45,7 @@ export function SmartAccountProvider({ children }: { children?: ReactNode }) {
     paymasterAddress: import.meta.env.VITE_4337_PAYMASTER_ADDRESS,
     apiKey: import.meta.env.VITE_4337_PROJECT_APIKEY,
     factoryAddress: import.meta.env.VITE_4337_FACTORY_ADDRESS,
-    factoryVersion: import.meta.env.VITE_4337_FACTORY_VERSION,
+    accountVersion: import.meta.env.VITE_4337_ACCOUNT_VERSION,
     accountType: import.meta.env.VITE_4337_ACCOUNT_TYPE,
   } satisfies SmartAccountConfig;
 

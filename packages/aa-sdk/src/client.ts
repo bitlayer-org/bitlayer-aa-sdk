@@ -9,7 +9,7 @@ import type { Address, Chain, Transport } from 'viem';
 import { createLightAccount, type LightAccountVersion } from './accounts/light-account.js';
 import { createPaymasterActions, type PaymasterActions } from './actions/paymaster.js';
 import { gasEstimator } from './middlewares/gas-estimator.js';
-import { createSimpleAccount } from './accounts/simple-account.js';
+import { createSimpleAccount, type SimpleAccountVersion } from './accounts/simple-account.js';
 import { bitlayer } from './transports/bitlayer.js';
 
 export type AccountType = 'simpleAccount' | 'lightAccount';
@@ -20,7 +20,7 @@ export interface SmartAccountConfig {
   paymasterAddress: Address;
   apiKey: string;
   factoryAddress: Address;
-  factoryVersion?: string;
+  accountVersion?: string;
   accountType?: AccountType;
   accountAddress?: Address;
 }
@@ -70,7 +70,7 @@ export async function createSmartAccountClient({
     apiKey,
     paymasterAddress,
     factoryAddress,
-    factoryVersion = 'v1.1.0',
+    accountVersion = 'v1.1.0',
     accountType = 'lightAccount',
     accountAddress,
   } = config;
@@ -94,6 +94,7 @@ export async function createSmartAccountClient({
           transport,
           signer,
           factoryAddress,
+          version: accountVersion as SimpleAccountVersion,
           accountAddress,
         });
         break;
@@ -103,7 +104,7 @@ export async function createSmartAccountClient({
           transport,
           signer,
           factoryAddress,
-          version: factoryVersion as LightAccountVersion<'LightAccount'>,
+          version: accountVersion as LightAccountVersion<'LightAccount'>,
           accountAddress,
         });
     }

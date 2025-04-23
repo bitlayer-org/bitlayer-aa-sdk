@@ -1,6 +1,6 @@
 {
   "name": "@bitlayer/aa-sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "viem based SDK that enables interactions with ERC-4337 Smart Accounts on Bitlayer.",
   "author": "Bitlayer",
   "license": "MIT",

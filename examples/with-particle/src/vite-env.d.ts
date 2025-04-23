@@ -8,8 +8,8 @@ interface ImportMetaEnv {
   readonly VITE_4337_PAYMASTER_ADDRESS: `0x${string}`;
 
   readonly VITE_4337_FACTORY_ADDRESS: `0x${string}`;
-  readonly VITE_4337_FACTORY_VERSION: 'v1.1.0' | 'v2.0.0' | undefined;
   readonly VITE_4337_ACCOUNT_TYPE: 'simpleAccount' | 'lightAccount' | undefined;
+  readonly VITE_4337_ACCOUNT_VERSION: 'v1.1.0' | 'v2.0.0' | 'v0.6' | 'v0.7' | undefined;
 
   readonly VITE_4337_PROJECT_APIKEY: string;
 
